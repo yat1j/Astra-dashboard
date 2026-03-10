@@ -37,9 +37,9 @@ st.divider()
 
 # ---------- TABS ----------
 tab1, tab2, tab3 = st.tabs([
-"📡 Telemetry Input",
-"🛰 Mission Control",
-"📊 Analytics"
+" Telemetry Input",
+" Mission Control",
+"Analytics"
 ])
 
 # =====================================================
@@ -51,7 +51,7 @@ with tab1:
     st.header("Student Telemetry Input")
 
     mode = st.selectbox(
-    "🎯 Target Career Mode",
+    " Target Career Mode",
     ["Product Company","Startup","Service Company"]
     )
 
@@ -92,7 +92,7 @@ with tab1:
     internship_doc = st.file_uploader("Upload Internship Proof",type=["pdf","png","jpg"])
     github_link = st.text_input("GitHub Project Link")
 
-    calculate = st.button("🚀 Calculate Mission Readiness")
+    calculate = st.button(" Calculate Mission Readiness")
 
 # =====================================================
 # CALCULATIONS
@@ -168,11 +168,11 @@ if calculate:
 
         # Mission banner
         if readiness >= 75:
-            status = "🚀 MISSION READY"
+            status = " MISSION READY"
         elif readiness >= 60:
-            status = "🟡 MISSION IMPROVING"
+            status = " MISSION IMPROVING"
         else:
-            status = "🔴 MISSION RISK"
+            status = " MISSION RISK"
 
         st.markdown(f"<h2 style='text-align:center'>{status}</h2>", unsafe_allow_html=True)
 
@@ -232,11 +232,11 @@ if calculate:
 
         st.subheader("Subsystem Status")
 
-        st.write("🚀 Propulsion:",system_status(dsa))
-        st.write("📦 Payload:",system_status(project_score))
-        st.write("🧭 Navigation:",system_status(core_cs))
-        st.write("🔗 Docking:",system_status(internship_score))
-        st.write("📡 Hackathon Sensor:",system_status(hackathon_score))
+        st.write(" Propulsion:",system_status(dsa))
+        st.write(" Payload:",system_status(project_score))
+        st.write(" Navigation:",system_status(core_cs))
+        st.write(" Docking:",system_status(internship_score))
+        st.write(" Hackathon Sensor:",system_status(hackathon_score))
 
         # ---------- STRENGTH ----------
         skills = {
@@ -296,6 +296,6 @@ if calculate:
 
         st.subheader("Verification Status")
 
-        st.write("Hackathon Certificate:", "Uploaded ✅" if hackathon_cert else "Not Uploaded ❌")
-        st.write("Internship Proof:", "Uploaded ✅" if internship_doc else "Not Uploaded ❌")
-        st.write("GitHub Repository:", "Provided ✅" if github_link else "Not Provided ❌")
+        st.write("Hackathon Certificate:", "Uploaded " if hackathon_cert else "Not Uploaded ❌")
+        st.write("Internship Proof:", "Uploaded " if internship_doc else "Not Uploaded ❌")
+        st.write("GitHub Repository:", "Provided " if github_link else "Not Provided ❌")
