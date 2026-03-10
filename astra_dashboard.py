@@ -252,7 +252,7 @@ if calculate:
 
         st.subheader("Insights")
 
-        st.write("🏆 Top Strength:", best_skill)
+        st.write(" Top Strength:", best_skill)
         st.write("⚠ Area to Improve:", weak_skill)
 
 # =====================================================
@@ -299,3 +299,4 @@ if calculate:
         st.write("Hackathon Certificate:", "Uploaded " if hackathon_cert else "Not Uploaded ❌")
         st.write("Internship Proof:", "Uploaded " if internship_doc else "Not Uploaded ❌")
         st.write("GitHub Repository:", "Provided " if github_link else "Not Provided ❌")
+
