@@ -5,7 +5,6 @@ import pandas as pd
 
 st.set_page_config(page_title="ASTRA Mission Control", layout="wide")
 
-# ---------- COSMOS UI ----------
 st.markdown("""
 <style>
 
@@ -25,86 +24,64 @@ footer {visibility:hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- TITLE ----------
-st.markdown(
-"<h1 style='text-align:center'>🚀 ASTRA Mission Control</h1>",
-unsafe_allow_html=True
-)
+st.markdown("<h1 style='text-align:center'>🚀 ASTRA Mission Control</h1>", unsafe_allow_html=True)
 
 st.write("Adaptive Skill Telemetry & Readiness Analyzer")
 
 st.divider()
 
-# ---------- TABS ----------
-tab1, tab2, tab3 = st.tabs([
-" Telemetry Input",
-" Mission Control",
-"Analytics"
-])
+st.header(" Student Telemetry Input")
 
-# =====================================================
-# TAB 1 — INPUT
-# =====================================================
+mode = st.selectbox(
+" Target Career Mode",
+["Product Company","Startup","Service Company"]
+)
 
-with tab1:
+col1,col2,col3 = st.columns(3)
 
-    st.header("Student Telemetry Input")
+with col1:
+    easy = st.number_input("Easy DSA Problems",0,1000)
+    medium = st.number_input("Medium DSA Problems",0,1000)
+    hard = st.number_input("Hard DSA Problems",0,1000)
 
-    mode = st.selectbox(
-    " Target Career Mode",
-    ["Product Company","Startup","Service Company"]
+with col2:
+    project = st.selectbox(
+    "Project Type",
+    ["Basic Project","CRUD Application","Full Stack","AI/ML Project","Deployed Product"]
     )
 
-    col1,col2,col3 = st.columns(3)
+    internship = st.selectbox(
+    "Internship Type",
+    ["None","Local Company","Startup","Mid-size Tech","Large Tech"]
+    )
 
-    with col1:
-        easy = st.number_input("Easy DSA Problems",0,1000)
-        medium = st.number_input("Medium DSA Problems",0,1000)
-        hard = st.number_input("Hard DSA Problems",0,1000)
+with col3:
+    hackathon_level = st.selectbox(
+    "Hackathon Level",
+    ["College","State","National","International"]
+    )
 
-    with col2:
-        project = st.selectbox(
-        "Project Type",
-        ["Basic Project","CRUD Application","Full Stack","AI/ML Project","Deployed Product"]
-        )
+    hackathon_position = st.selectbox(
+    "Position",
+    ["Participation","Top 10","Finalist","Winner"]
+    )
 
-        internship = st.selectbox(
-        "Internship Type",
-        ["None","Local Company","Startup","Mid-size Tech","Large Tech"]
-        )
+cgpa = st.slider("CGPA",0.0,10.0,7.0)
 
-    with col3:
-        hackathon_level = st.selectbox(
-        "Hackathon Level",
-        ["College","State","National","International"]
-        )
+st.subheader("Verification Evidence")
 
-        hackathon_position = st.selectbox(
-        "Position",
-        ["Participation","Top 10","Finalist","Winner"]
-        )
+hackathon_cert = st.file_uploader("Upload Hackathon Certificate",type=["pdf","png","jpg"])
+internship_doc = st.file_uploader("Upload Internship Proof",type=["pdf","png","jpg"])
+github_link = st.text_input("GitHub Project Link")
 
-    cgpa = st.slider("CGPA",0.0,10.0,7.0)
+calculate = st.button("🚀 Calculate Mission Readiness")
 
-    st.subheader("Verification Evidence")
-
-    hackathon_cert = st.file_uploader("Upload Hackathon Certificate",type=["pdf","png","jpg"])
-    internship_doc = st.file_uploader("Upload Internship Proof",type=["pdf","png","jpg"])
-    github_link = st.text_input("GitHub Project Link")
-
-    calculate = st.button(" Calculate Mission Readiness")
-
-# =====================================================
-# CALCULATIONS
-# =====================================================
 
 if calculate:
 
-    # ---------- DSA ----------
     dsa_raw = easy*1 + medium*3 + hard*5
-    dsa = min((dsa_raw/700)*100,100)
+    dsa = min((dsa_raw/900)*100,100)
 
-    # ---------- PROJECT ----------
     project_score = {
         "Basic Project":30,
         "CRUD Application":50,
@@ -113,190 +90,172 @@ if calculate:
         "Deployed Product":100
     }[project]
 
-    # ---------- INTERNSHIP ----------
     internship_score = {
-        "None":0,
-        "Local Company":40,
-        "Startup":60,
-        "Mid-size Tech":75,
-        "Large Tech":90
+        "None":20,
+        "Local Company":55,
+        "Startup":70,
+        "Mid-size Tech":85,
+        "Large Tech":100
     }[internship]
 
-    # ---------- HACKATHON (IMPROVED SCORING) ----------
-    level_score = {
-        "College":40,
-        "State":60,
-        "National":80,
-        "International":100
+    level_base = {
+    "College":40,
+    "State":67,
+    "National":87,
+    "International":95
     }[hackathon_level]
 
-    multiplier = {
-        "Participation":0.6,
-        "Top 10":0.8,
-        "Finalist":0.9,
-        "Winner":1
+    placement_bonus = {
+    "Participation":0,
+    "Top 10":4,
+    "Finalist":6,
+    "Winner":8
     }[hackathon_position]
 
-    hackathon_score = level_score * multiplier
-
-    # ---------- CORE ----------
+    hackathon_score = min(level_base + placement_bonus,100)
     core_cs = (cgpa/10)*100
-    communication = 70
 
-    # ---------- ADAPTIVE WEIGHTS ----------
+    bonus = 2
+
+    dsa = min(dsa + bonus,100)
+    project_score = min(project_score + bonus,100)
+    internship_score = min(internship_score + bonus,100)
+    hackathon_score = min(hackathon_score + bonus,100)
+    core_cs = min(core_cs + bonus,100)
+
+
     if mode == "Product Company":
-        w_dsa,w_proj,w_cs,w_int,w_hack,w_comm = 0.4,0.2,0.15,0.1,0.1,0.05
+        w_dsa,w_proj,w_cs,w_int,w_hack = 0.40,0.20,0.20,0.10,0.10
+
     elif mode == "Startup":
-        w_dsa,w_proj,w_cs,w_int,w_hack,w_comm = 0.25,0.35,0.1,0.1,0.15,0.05
+        w_dsa,w_proj,w_cs,w_int,w_hack = 0.25,0.35,0.10,0.10,0.20
+
     else:
-        w_dsa,w_proj,w_cs,w_int,w_hack,w_comm = 0.25,0.15,0.2,0.15,0.05,0.2
+        w_dsa,w_proj,w_cs,w_int,w_hack = 0.25,0.15,0.30,0.20,0.10
 
     readiness = (
         w_dsa*dsa +
         w_proj*project_score +
         w_cs*core_cs +
         w_int*internship_score +
-        w_hack*hackathon_score +
-        w_comm*communication
+        w_hack*hackathon_score
     )
 
-# =====================================================
-# TAB 2 — MISSION CONTROL
-# =====================================================
+    st.divider()
+    st.header(" Mission Summary")
 
-    with tab2:
+    skills = {
+    "DSA": dsa,
+    "Projects": project_score,
+    "Core CS": core_cs,
+    "Internship": internship_score,
+    "Hackathon": hackathon_score
+    }
 
-        # Mission banner
-        if readiness >= 75:
-            status = " MISSION READY"
-        elif readiness >= 60:
-            status = " MISSION IMPROVING"
+    best_skill = max(skills, key=skills.get)
+    weak_skill = min(skills, key=skills.get)
+
+    col1,col2,col3 = st.columns(3)
+
+    col1.metric("Placement Readiness",round(readiness,1))
+    col2.metric("Top Strength",best_skill)
+    col3.metric("Area to Improve",weak_skill)
+
+    st.header("🛰 Mission Control")
+
+    if readiness >= 75:
+        st.success(" Mission Ready")
+    elif readiness >= 60:
+        st.warning(" Mission Improving")
+    else:
+        st.error(" Mission Risk")
+
+    gauge = go.Figure(go.Indicator(
+    mode="gauge+number",
+    value=readiness,
+    title={'text':"Placement Readiness"},
+    gauge={
+    'axis':{'range':[0,100]},
+    'steps':[
+    {'range':[0,50],'color':'red'},
+    {'range':[50,70],'color':'orange'},
+    {'range':[70,100],'color':'green'}
+    ]
+    }
+    ))
+
+    st.plotly_chart(gauge,use_container_width=True)
+
+    st.subheader("Subsystem Telemetry")
+
+    st.write(" DSA Engine")
+    st.progress(dsa/100)
+
+    st.write(" Project Payload")
+    st.progress(project_score/100)
+
+    st.write(" Core Navigation")
+    st.progress(core_cs/100)
+
+    st.write(" Internship Dock")
+    st.progress(internship_score/100)
+
+    st.write(" Hackathon Sensor")
+    st.progress(hackathon_score/100)
+
+
+    def subsystem_status(score):
+        if score >= 75:
+            return "🟢 Healthy"
+        elif score >= 60:
+            return "🟡 Warning"
         else:
-            status = " MISSION RISK"
+            return "🔴 Critical"
 
-        st.markdown(f"<h2 style='text-align:center'>{status}</h2>", unsafe_allow_html=True)
+    st.subheader("Subsystem Health Status")
 
-        col1,col2,col3,col4 = st.columns(4)
+    st.write(" DSA Engine:", subsystem_status(dsa))
+    st.write(" Project Payload:", subsystem_status(project_score))
+    st.write(" Core Navigation:", subsystem_status(core_cs))
+    st.write(" Internship Dock:", subsystem_status(internship_score))
+    st.write(" Hackathon Sensor:", subsystem_status(hackathon_score))
 
-        col1.metric("Readiness",round(readiness,1))
-        col2.metric("DSA Score",round(dsa,1))
-        col3.metric("Projects",project_score)
-        col4.metric("Internship",internship_score)
+    st.header("Skill Analytics")
 
-        # Gauge
-        gauge = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=readiness,
-        title={'text':"Placement Readiness"},
-        gauge={
-        'axis':{'range':[0,100]},
-        'steps':[
-        {'range':[0,50],'color':'red'},
-        {'range':[50,70],'color':'orange'},
-        {'range':[70,100],'color':'green'}
-        ]
-        }
-        ))
+    categories = ['DSA','Projects','Core CS','Internship','Hackathons']
+    values = [dsa,project_score,core_cs,internship_score,hackathon_score]
 
-        st.plotly_chart(gauge,use_container_width=True)
+    radar = go.Figure()
 
-        st.progress(readiness/100)
+    radar.add_trace(go.Scatterpolar(
+    r=values,
+    theta=categories,
+    fill='toself'
+    ))
 
-        st.subheader("Subsystem Health Telemetry")
+    radar.update_layout(
+    polar=dict(radialaxis=dict(visible=True,range=[0,100])),
+    showlegend=False
+    )
 
-        st.write("DSA Engine")
-        st.progress(dsa/100)
+    st.plotly_chart(radar)
 
-        st.write("Project Payload")
-        st.progress(project_score/100)
+    data = {"Skill":categories,"Score":values}
+    pie = px.pie(data,names="Skill",values="Score")
+    st.plotly_chart(pie)
 
-        st.write("Core Navigation")
-        st.progress(core_cs/100)
+    health_df = pd.DataFrame({"Subsystem":categories,"Health":values})
 
-        st.write("Internship Dock")
-        st.progress(internship_score/100)
+    heat = px.imshow([health_df["Health"]],
+    labels=dict(x="Subsystem",color="Health"),
+    x=health_df["Subsystem"],
+    color_continuous_scale="Viridis")
 
-        st.write("Hackathon Sensor")
-        st.progress(hackathon_score/100)
+    st.plotly_chart(heat)
+    st.header("Verification Status")
 
-        # ---------- STATUS LABEL ----------
-        def system_status(score):
-            if score >= 85:
-                return "🟢 Excellent"
-            elif score >= 70:
-                return "🟢 Good"
-            elif score >= 50:
-                return "🟡 Can Improve"
-            else:
-                return "🔴 Critical"
+    st.write("Hackathon Certificate:", "Uploaded " if hackathon_cert else "Not Uploaded ❌")
+    st.write("Internship Proof:", "Uploaded " if internship_doc else "Not Uploaded ❌")
+    st.write("GitHub Repository:", "Provided " if github_link else "Not Provided ❌")
 
-        st.subheader("Subsystem Status")
-
-        st.write(" Propulsion:",system_status(dsa))
-        st.write(" Payload:",system_status(project_score))
-        st.write(" Navigation:",system_status(core_cs))
-        st.write(" Docking:",system_status(internship_score))
-        st.write(" Hackathon Sensor:",system_status(hackathon_score))
-
-        # ---------- STRENGTH ----------
-        skills = {
-        "DSA": dsa,
-        "Projects": project_score,
-        "Core CS": core_cs,
-        "Internship": internship_score,
-        "Hackathon": hackathon_score
-        }
-
-        best_skill = max(skills, key=skills.get)
-        weak_skill = min(skills, key=skills.get)
-
-        st.subheader("Insights")
-
-        st.write(" Top Strength:", best_skill)
-        st.write("⚠ Area to Improve:", weak_skill)
-
-# =====================================================
-# TAB 3 — ANALYTICS
-# =====================================================
-
-    with tab3:
-
-        st.header("Skill Analytics")
-
-        categories = ['DSA','Projects','Core CS','Internship','Hackathons','Communication']
-        values = [dsa,project_score,core_cs,internship_score,hackathon_score,communication]
-
-        radar = go.Figure()
-
-        radar.add_trace(go.Scatterpolar(
-        r=values,
-        theta=categories,
-        fill='toself'
-        ))
-
-        radar.update_layout(
-        polar=dict(radialaxis=dict(visible=True,range=[0,100])),
-        showlegend=False
-        )
-
-        st.plotly_chart(radar)
-
-        data = {"Skill":categories,"Score":values}
-        pie = px.pie(data,names="Skill",values="Score")
-        st.plotly_chart(pie)
-
-        health_df = pd.DataFrame({"Subsystem":categories,"Health":values})
-
-        heat = px.imshow([health_df["Health"]],
-        labels=dict(x="Subsystem",color="Health"),
-        x=health_df["Subsystem"],
-        color_continuous_scale="Viridis")
-
-        st.plotly_chart(heat)
-
-        st.subheader("Verification Status")
-
-        st.write("Hackathon Certificate:", "Uploaded " if hackathon_cert else "Not Uploaded ❌")
-        st.write("Internship Proof:", "Uploaded " if internship_doc else "Not Uploaded ❌")
-        st.write("GitHub Repository:", "Provided " if github_link else "Not Provided ❌")
 
